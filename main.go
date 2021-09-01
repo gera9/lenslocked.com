@@ -12,11 +12,17 @@ var (
 	homeView    *views.View
 	contactView *views.View
 	faqView     *views.View
+	signupView  *views.View
 )
 
 func home(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	failOnError(homeView.Render(w, nil))
+}
+
+func signUp(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	failOnError(signupView.Render(w, nil))
 }
 
 func contact(w http.ResponseWriter, r *http.Request) {
@@ -42,12 +48,14 @@ func failOnError(err error) {
 }
 
 func main() {
-	homeView = views.NewView("bootstrap", "views/home.gohtml")
-	contactView = views.NewView("bootstrap", "views/contact.gohtml")
-	faqView = views.NewView("bootstrap", "views/faq.gohtml")
+	homeView = views.NewView("bootswatch", "views/home.gohtml")
+	contactView = views.NewView("bootswatch", "views/contact.gohtml")
+	faqView = views.NewView("bootswatch", "views/faq.gohtml")
+	signupView = views.NewView("bootswatch", "views/signup.gohtml")
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", home)
+	r.HandleFunc("/signup", signUp)
 	r.HandleFunc("/contact", contact)
 	r.HandleFunc("/faq", faq)
 	r.NotFoundHandler = http.HandlerFunc(pageNotFound)
