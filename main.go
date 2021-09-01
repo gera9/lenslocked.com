@@ -11,25 +11,22 @@ import (
 var (
 	homeView    *views.View
 	contactView *views.View
+	faqView     *views.View
 )
 
 func home(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	if err := homeView.Template.Execute(w, nil); err != nil {
-		panic(err)
-	}
+	failOnError(homeView.Render(w, nil))
 }
 
 func contact(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	if err := contactView.Template.Execute(w, nil); err != nil {
-		panic(err)
-	}
+	failOnError(contactView.Render(w, nil))
 }
 
 func faq(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	fmt.Fprint(w, "FAQ page!")
+	failOnError(faqView.Render(w, nil))
 }
 
 func pageNotFound(w http.ResponseWriter, r *http.Request) {
@@ -38,9 +35,16 @@ func pageNotFound(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "404 - <b>Page not found</b>")
 }
 
+func failOnError(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
 func main() {
-	homeView = views.NewView("views/home.gohtml")
-	contactView = views.NewView("views/contact.gohtml")
+	homeView = views.NewView("bootstrap", "views/home.gohtml")
+	contactView = views.NewView("bootstrap", "views/contact.gohtml")
+	faqView = views.NewView("bootstrap", "views/faq.gohtml")
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", home)
@@ -48,5 +52,7 @@ func main() {
 	r.HandleFunc("/faq", faq)
 	r.NotFoundHandler = http.HandlerFunc(pageNotFound)
 
-	http.ListenAndServe(":3000", r)
+	if err := http.ListenAndServe(":3000", r); err != nil {
+		panic(err)
+	}
 }
