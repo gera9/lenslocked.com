@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gera9/lenslocked.com/controllers"
 	"github.com/gera9/lenslocked.com/views"
 	"github.com/gorilla/mux"
 )
@@ -12,17 +13,11 @@ var (
 	homeView    *views.View
 	contactView *views.View
 	faqView     *views.View
-	signupView  *views.View
 )
 
 func home(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	failOnError(homeView.Render(w, nil))
-}
-
-func signUp(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-	failOnError(signupView.Render(w, nil))
 }
 
 func contact(w http.ResponseWriter, r *http.Request) {
@@ -51,13 +46,14 @@ func main() {
 	homeView = views.NewView("bootswatch", "views/home.gohtml")
 	contactView = views.NewView("bootswatch", "views/contact.gohtml")
 	faqView = views.NewView("bootswatch", "views/faq.gohtml")
-	signupView = views.NewView("bootswatch", "views/signup.gohtml")
+	usersC := controllers.NewUsers()
 
 	r := mux.NewRouter()
-	r.HandleFunc("/", home)
-	r.HandleFunc("/signup", signUp)
-	r.HandleFunc("/contact", contact)
-	r.HandleFunc("/faq", faq)
+	r.HandleFunc("/", home).Methods("GET")
+	r.HandleFunc("/signup", usersC.New).Methods("GET")
+	r.HandleFunc("/signup", usersC.Create).Methods("POST")
+	r.HandleFunc("/contact", contact).Methods("GET")
+	r.HandleFunc("/faq", faq).Methods("GET")
 	r.NotFoundHandler = http.HandlerFunc(pageNotFound)
 
 	if err := http.ListenAndServe(":3000", r); err != nil {
