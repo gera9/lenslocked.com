@@ -7,6 +7,11 @@ import (
 	"github.com/gera9/lenslocked.com/views"
 )
 
+type SignupForm struct {
+	Email    string `schema:"email"`
+	Password string `schema:"password"`
+}
+
 func NewUsers() *Users {
 	return &Users{
 		NewView: views.NewView("bootswatch", "views/users/new.gohtml"),
@@ -24,5 +29,12 @@ func (u *Users) New(w http.ResponseWriter, r *http.Request) {
 }
 
 func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Creating...")
+	var form SignupForm
+
+	if err := parseForm(r, &form); err != nil {
+		panic(err)
+	}
+
+	fmt.Fprintln(w, "Email is ", form.Email)
+	fmt.Fprintln(w, "Password is ", form.Password)
 }

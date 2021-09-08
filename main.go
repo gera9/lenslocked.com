@@ -5,30 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gera9/lenslocked.com/controllers"
-	"github.com/gera9/lenslocked.com/views"
 	"github.com/gorilla/mux"
 )
-
-var (
-	homeView    *views.View
-	contactView *views.View
-	faqView     *views.View
-)
-
-func home(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-	failOnError(homeView.Render(w, nil))
-}
-
-func contact(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-	failOnError(contactView.Render(w, nil))
-}
-
-func faq(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-	failOnError(faqView.Render(w, nil))
-}
 
 func pageNotFound(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
@@ -43,17 +21,16 @@ func failOnError(err error) {
 }
 
 func main() {
-	homeView = views.NewView("bootswatch", "views/home.gohtml")
-	contactView = views.NewView("bootswatch", "views/contact.gohtml")
-	faqView = views.NewView("bootswatch", "views/faq.gohtml")
+	staticC := controllers.NewStatic()
 	usersC := controllers.NewUsers()
 
 	r := mux.NewRouter()
-	r.HandleFunc("/", home).Methods("GET")
+	r.Handle("/", staticC.Home).Methods("GET")
+	r.Handle("/contact", staticC.Contact).Methods("GET")
+	r.Handle("/faq", staticC.FAQ).Methods("GET")
 	r.HandleFunc("/signup", usersC.New).Methods("GET")
 	r.HandleFunc("/signup", usersC.Create).Methods("POST")
-	r.HandleFunc("/contact", contact).Methods("GET")
-	r.HandleFunc("/faq", faq).Methods("GET")
+
 	r.NotFoundHandler = http.HandlerFunc(pageNotFound)
 
 	if err := http.ListenAndServe(":3000", r); err != nil {
