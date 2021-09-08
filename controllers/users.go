@@ -14,7 +14,7 @@ type SignupForm struct {
 
 func NewUsers() *Users {
 	return &Users{
-		NewView: views.NewView("bootswatch", "views/users/new.gohtml"),
+		NewView: views.NewView("bootswatch", "users/new"),
 	}
 }
 

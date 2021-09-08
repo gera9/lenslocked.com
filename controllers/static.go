@@ -11,10 +11,13 @@ type Static struct {
 func NewStatic() *Static {
 	return &Static{
 		Home: views.NewView(
-			"bootswatch", "views/static/home.gohtml"),
+			"bootswatch", "static/home",
+		),
 		Contact: views.NewView(
-			"bootswatch", "views/static/contact.gohtml"),
+			"bootswatch", "static/contact",
+		),
 		FAQ: views.NewView(
-			"bootswatch", "views/static/faq.gohtml"),
+			"bootswatch", "static/faq",
+		),
 	}
 }
